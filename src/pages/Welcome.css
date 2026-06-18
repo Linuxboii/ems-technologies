@@ -1,0 +1,414 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Caveat:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+/* ===========================================================================
+   Welcome letter — warm editorial theme. EVERYTHING is scoped under
+   .welcome-letter so it never bleeds into the mono "Swiss" portal pages.
+   Tokens are defined ON .welcome-letter, never on :root.
+   =========================================================================== */
+
+.welcome-letter {
+  --w-bg: #faf7f0;
+  --w-paper: #fbf9f3;
+  --w-ink: #1a1714;
+  --w-ink-soft: #5c554c;
+  --w-muted: #9a9186;
+  --w-accent: #c1502e;
+  --w-accent-soft: #e8d9cf;
+  --w-line: #e3ddd0;
+
+  background: var(--w-bg);
+  color: var(--w-ink);
+  min-height: 100vh;
+  width: 100%;
+  font-family: 'EB Garamond', Georgia, serif;
+  position: relative;
+  padding: 104px 24px 64px;
+  overflow: hidden;
+}
+
+/* ----- Corner brackets (decorative frame) ----- */
+.welcome-letter .wl-frame {
+  position: absolute;
+  inset: 28px;
+  pointer-events: none;
+}
+.welcome-letter .wl-frame span {
+  position: absolute;
+  width: 38px;
+  height: 38px;
+  border: 0 solid var(--w-accent-soft);
+}
+.welcome-letter .wl-frame span.tl { top: 0; left: 0; border-top-width: 2px; border-left-width: 2px; }
+.welcome-letter .wl-frame span.tr { top: 0; right: 0; border-top-width: 2px; border-right-width: 2px; }
+.welcome-letter .wl-frame span.bl { bottom: 0; left: 0; border-bottom-width: 2px; border-left-width: 2px; }
+.welcome-letter .wl-frame span.br { bottom: 0; right: 0; border-bottom-width: 2px; border-right-width: 2px; }
+
+/* ----- Paper column ----- */
+.welcome-letter .wl-paper {
+  position: relative;
+  max-width: 960px;
+  margin: 0 auto;
+}
+
+/* ----- Reveal motion ----- */
+.welcome-letter .wl-reveal {
+  opacity: 0;
+  transform: translateY(16px);
+  transition: opacity 480ms ease-out, transform 480ms ease-out;
+}
+.welcome-letter .wl-reveal.is-visible {
+  opacity: 1;
+  transform: none;
+}
+
+/* ===================== Top bar ===================== */
+.welcome-letter .wl-topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 24px;
+  padding-bottom: 28px;
+}
+.welcome-letter .wl-topbar-left {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.welcome-letter .wl-brand-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.welcome-letter .wl-mark {
+  width: 40px;
+  height: 40px;
+  border-radius: 9px;
+  flex-shrink: 0;
+  background: linear-gradient(145deg, #2563eb, #1e3a8a);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 10px rgba(30, 58, 138, 0.25);
+}
+.welcome-letter .wl-mark svg { display: block; }
+.welcome-letter .wl-brand {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 1.7rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--w-ink);
+  line-height: 1;
+}
+.welcome-letter .wl-brand em {
+  font-style: italic;
+  color: var(--w-accent);
+}
+.welcome-letter .wl-mono {
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-size: 0.66rem;
+  font-weight: 400;
+  letter-spacing: 0.22em;
+  color: var(--w-muted);
+  text-transform: uppercase;
+}
+.welcome-letter .wl-topbar-right {
+  text-align: right;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  line-height: 1.5;
+}
+.welcome-letter .wl-topbar-right .wl-accent {
+  color: var(--w-accent);
+}
+
+/* ===================== Kicker ===================== */
+.welcome-letter .wl-kicker {
+  font-family: 'Caveat', cursive;
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: var(--w-accent);
+  margin: 10px 0 4px;
+}
+
+/* ===================== Headline ===================== */
+.welcome-letter .wl-headline {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-weight: 700;
+  font-size: clamp(2.4rem, 7vw, 4.2rem);
+  line-height: 1.04;
+  letter-spacing: -0.01em;
+  color: var(--w-ink);
+  margin: 0 0 18px;
+}
+.welcome-letter .wl-headline em {
+  font-style: italic;
+  font-weight: 500;
+  color: var(--w-accent);
+}
+
+/* ===================== Lede ===================== */
+.welcome-letter .wl-lede {
+  font-family: 'EB Garamond', Georgia, serif;
+  font-style: italic;
+  font-size: 1.3rem;
+  line-height: 1.5;
+  color: var(--w-ink-soft);
+  max-width: 34em;
+  margin: 0 0 30px;
+}
+
+/* ===================== Diamond + rule ===================== */
+.welcome-letter .wl-divider {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin: 8px 0 28px;
+}
+.welcome-letter .wl-diamond {
+  width: 9px;
+  height: 9px;
+  flex-shrink: 0;
+  background: var(--w-accent);
+  transform: rotate(45deg);
+}
+.welcome-letter .wl-rule {
+  flex: 1;
+  height: 1px;
+  background: var(--w-line);
+  border: 0;
+}
+
+/* ===================== Body ===================== */
+.welcome-letter .wl-body p {
+  font-family: 'EB Garamond', Georgia, serif;
+  font-size: 1.18rem;
+  line-height: 1.62;
+  color: var(--w-ink-soft);
+  max-width: 40em;
+  margin: 0 0 18px;
+}
+.welcome-letter .wl-body strong {
+  font-weight: 600;
+  color: var(--w-ink);
+}
+.welcome-letter .wl-dropcap::first-letter {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-weight: 700;
+  color: var(--w-accent);
+  float: left;
+  font-size: 3.4em;
+  line-height: 0.8;
+  padding: 6px 10px 0 0;
+}
+
+/* ===================== Cards ===================== */
+.welcome-letter .wl-cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  margin: 40px 0 0;
+}
+.welcome-letter .wl-card {
+  background: var(--w-paper);
+  border: 1px solid var(--w-accent-soft);
+  border-radius: 4px;
+  padding: 22px 22px 26px;
+  transition: border-color 250ms ease;
+}
+.welcome-letter .wl-card:hover {
+  border-color: var(--w-accent);
+}
+.welcome-letter .wl-no {
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-size: 0.66rem;
+  font-weight: 500;
+  letter-spacing: 0.22em;
+  color: var(--w-accent);
+  margin-bottom: 12px;
+}
+.welcome-letter .wl-card h3 {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-weight: 600;
+  font-size: 1.3rem;
+  color: var(--w-ink);
+  margin: 0 0 10px;
+}
+.welcome-letter .wl-card p {
+  font-family: 'EB Garamond', Georgia, serif;
+  font-size: 1rem;
+  line-height: 1.5;
+  color: var(--w-ink-soft);
+  margin: 0;
+}
+
+/* ===================== Signature ===================== */
+.welcome-letter .wl-sign {
+  margin-top: 64px;
+}
+.welcome-letter .wl-sign-lede {
+  font-family: 'EB Garamond', Georgia, serif;
+  font-style: italic;
+  font-size: 1.2rem;
+  color: var(--w-ink-soft);
+  margin: 0 0 4px;
+}
+.welcome-letter .wl-signature {
+  font-family: 'Caveat', cursive;
+  font-weight: 700;
+  font-size: 3.2rem;
+  line-height: 1;
+  color: var(--w-ink);
+  margin: 0 0 10px;
+}
+.welcome-letter .wl-sign-name {
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-size: 0.78rem;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  color: var(--w-ink);
+  margin: 0 0 4px;
+}
+.welcome-letter .wl-sign-role {
+  font-family: 'EB Garamond', Georgia, serif;
+  font-style: italic;
+  font-size: 1rem;
+  color: var(--w-ink-soft);
+  margin: 0 0 8px;
+}
+.welcome-letter .wl-contact {
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  color: var(--w-accent);
+  margin: 0;
+}
+
+/* ===================== Seal ===================== */
+.welcome-letter .wl-seal {
+  position: absolute;
+  right: 0;
+  bottom: 96px;
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  border: 1px dashed var(--w-accent-soft);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 4px;
+  color: var(--w-muted);
+}
+.welcome-letter .wl-seal .wl-seal-brand {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--w-ink-soft);
+}
+.welcome-letter .wl-seal .wl-seal-brand em {
+  font-style: italic;
+  color: var(--w-accent);
+}
+.welcome-letter .wl-seal .wl-seal-year {
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-size: 0.6rem;
+  letter-spacing: 0.18em;
+}
+.welcome-letter .wl-seal .wl-seal-tag {
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-size: 0.5rem;
+  letter-spacing: 0.16em;
+  margin-top: 2px;
+}
+
+/* ===================== Footer ===================== */
+.welcome-letter .wl-footer {
+  margin-top: 48px;
+}
+.welcome-letter .wl-footer .wl-rule {
+  margin-bottom: 20px;
+}
+.welcome-letter .wl-footer-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+.welcome-letter .wl-ps {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: 'Caveat', cursive;
+  font-weight: 600;
+  font-size: 1.4rem;
+  color: var(--w-ink);
+}
+.welcome-letter .wl-ps em {
+  font-style: italic;
+  color: var(--w-accent);
+}
+.welcome-letter .wl-ps svg {
+  color: var(--w-accent);
+}
+.welcome-letter .wl-footer-strip {
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-size: 0.62rem;
+  letter-spacing: 0.22em;
+  color: var(--w-muted);
+}
+
+/* ===================== Portal CTA ===================== */
+.welcome-letter .wl-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 28px;
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-size: 0.82rem;
+  letter-spacing: 0.08em;
+  color: var(--w-accent);
+  text-decoration: none;
+  border-radius: 3px;
+}
+.welcome-letter .wl-cta svg {
+  transition: transform 220ms ease;
+}
+.welcome-letter .wl-cta:hover svg {
+  transform: translateX(4px);
+}
+.welcome-letter .wl-cta:focus-visible {
+  outline: 2px solid var(--w-accent);
+  outline-offset: 4px;
+}
+
+/* ===================== Responsive ===================== */
+@media (max-width: 1023px) {
+  .welcome-letter .wl-seal { bottom: 120px; }
+}
+@media (max-width: 767px) {
+  .welcome-letter { padding: 104px 18px 56px; }
+  .welcome-letter .wl-cards { grid-template-columns: 1fr; }
+  .welcome-letter .wl-topbar {
+    flex-direction: column;
+    gap: 16px;
+    align-items: flex-start;
+  }
+  .welcome-letter .wl-topbar-right { text-align: left; }
+  .welcome-letter .wl-frame { display: none; }
+  .welcome-letter .wl-seal {
+    position: static;
+    margin: 32px auto 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .welcome-letter .wl-reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+  .welcome-letter .wl-cta svg { transition: none; }
+}

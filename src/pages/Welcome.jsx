@@ -1,91 +1,185 @@
 import { Link } from 'react-router-dom';
-import { useRef, useEffect, useState } from 'react';
-import { ChevronRight } from 'lucide-react';
+import { useEffect, useRef } from 'react';
+import { ArrowRight, Sparkle } from 'lucide-react';
+import './Welcome.css';
 
 export default function Welcome() {
-  const headlineRef = useRef(null);
-  const [visible, setVisible] = useState(false);
+  const rootRef = useRef(null);
 
   useEffect(() => {
-    const timer = setTimeout(() => setVisible(true), 100);
-    return () => clearTimeout(timer);
+    const root = rootRef.current;
+    if (!root) return;
+
+    const blocks = Array.from(root.querySelectorAll('.wl-reveal'));
+
+    const prefersReduced = window.matchMedia(
+      '(prefers-reduced-motion: reduce)'
+    ).matches;
+
+    if (prefersReduced) {
+      blocks.forEach((el) => el.classList.add('is-visible'));
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      (entries, obs) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const index = blocks.indexOf(entry.target);
+            const delay = index >= 0 ? index * 45 : 0;
+            window.setTimeout(() => {
+              entry.target.classList.add('is-visible');
+            }, delay);
+            obs.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.12, rootMargin: '0px 0px -40px 0px' }
+    );
+
+    blocks.forEach((el) => observer.observe(el));
+    return () => observer.disconnect();
   }, []);
 
   return (
-    <div className="page-section" style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', paddingTop: 0 }}>
-      <div className="page-container" style={{ width: '100%' }}>
-        <div style={{
-          maxWidth: 800,
-          paddingTop: 80,
-          paddingBottom: 80,
-        }}>
-          {/* Exaggerated Minimalism — oversized hero typography */}
-          <div className={`fade-in-up ${visible ? 'visible' : ''}`} style={{ marginBottom: 32 }}>
-            <p style={{
-              fontSize: 'clamp(3rem, 8vw, 7rem)',
-              fontWeight: 900,
-              lineHeight: 1.0,
-              letterSpacing: '-0.05em',
-              color: 'var(--color-text)',
-              marginBottom: 0,
-              maxWidth: 'none',
-            }}>
-              Welcome to
-              <br />
-              <span style={{ color: 'var(--color-text)', borderBottom: '4px solid var(--color-text)' }}>
-                Project Atlas
+    <div className="welcome-letter" ref={rootRef}>
+      <div className="wl-frame" aria-hidden="true">
+        <span className="tl" />
+        <span className="tr" />
+        <span className="bl" />
+        <span className="br" />
+      </div>
+
+      <div className="wl-paper">
+        {/* 1. Top bar */}
+        <header className="wl-topbar">
+          <div className="wl-topbar-left">
+            <div className="wl-brand-row">
+              <span className="wl-mark" aria-hidden="true">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M12 3.5 4.5 19h3.4l1.3-3h5.6l1.3 3h3.4L12 3.5Zm-1.7 9.4L12 9l1.7 3.9h-3.4Z" fill="#fff" />
+                </svg>
               </span>
-            </p>
+              <span className="wl-brand">
+                Avlok<em>Ai</em>
+              </span>
+            </div>
+            <div className="wl-mono">SEE MORE · KNOW MORE · DO MORE</div>
           </div>
 
-          {/* Subheadline */}
-          <div className={`fade-in-up ${visible ? 'visible' : ''}`} style={{ marginBottom: 48 }}>
-            <p style={{
-              fontSize: 'clamp(1.05rem, 2vw, 1.3rem)',
-              color: 'var(--color-text-secondary)',
-              fontWeight: 400,
-              lineHeight: 1.7,
-              maxWidth: 560,
-            }}>
-              Your central hub for everything — SoP, deliverables, timeline, and payments.
-              Everything you need, all in one place.
-            </p>
+          <div className="wl-topbar-right">
+            <div className="wl-mono">A LITTLE NOTE</div>
+            <div className="wl-mono wl-accent">FOR MR. VIKRAM</div>
           </div>
+        </header>
 
-          {/* CTA */}
-          <div className={`fade-in-up ${visible ? 'visible' : ''}`} style={{ display: 'flex', gap: 16, flexWrap: 'wrap', marginBottom: 80 }}>
-            <Link to="/sop" className="btn-primary">
-              Get Started
-              <ChevronRight size={18} />
-            </Link>
-            <Link to="/payment" className="btn-secondary">
-              View Payments
-            </Link>
-          </div>
+        {/* 2. Kicker */}
+        <p className="wl-kicker wl-reveal">a warm hello —</p>
 
-          {/* Quick stats — clean, 3-column grid */}
-          <div className={`stagger ${visible ? 'visible' : ''}`} style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
-            gap: 16,
-            maxWidth: 700,
-          }}>
-            {[
-              { label: 'Deliverables', value: '12 Items' },
-              { label: 'Sprint Duration', value: '6 Weeks' },
-              { label: 'Next Milestone', value: 'Feb 28, 2026' },
-            ].map((item, i) => (
-              <div key={i} className="card" style={{ cursor: 'default' }}>
-                <div style={{ fontSize: 12, fontWeight: 500, color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 6 }}>
-                  {item.label}
-                </div>
-                <div style={{ fontSize: 20, fontWeight: 700, color: 'var(--color-text)' }}>
-                  {item.value}
-                </div>
-              </div>
-            ))}
-          </div>
+        {/* 3. Headline */}
+        <h1 className="wl-headline wl-reveal">
+          Welcome aboard,
+          <br />
+          <em>Mr. Vikram.</em>
+        </h1>
+
+        {/* 4. Lede */}
+        <p className="wl-lede wl-reveal">
+          We're genuinely glad to be working together, and looking forward to
+          everything we'll build from here.
+        </p>
+
+        {/* 5. Diamond + rule */}
+        <div className="wl-divider wl-reveal" aria-hidden="true">
+          <span className="wl-diamond" />
+          <hr className="wl-rule" />
         </div>
+
+        {/* 6. Body */}
+        <div className="wl-body wl-reveal">
+          <p className="wl-dropcap">
+            It is <strong>genuinely great</strong> to have you with us — not in
+            the polite, copy-pasted, "dear valued client" sort of way, but the
+            real kind, where we've already got ideas scribbled in the margins
+            and we're a little impatient to show you.
+          </p>
+          <p>
+            From here on, you're not a ticket number or a line on an invoice.
+            You're <strong>Mr. Vikram</strong>, and your work gets our full
+            attention — the curiosity, the craft, and the occasional 11pm "what
+            if we tried…" message.
+          </p>
+          <p>
+            We build things that help you{' '}
+            <strong>see more, know more, and do more</strong>. Consider this the
+            front door — it's open, the kettle's on, and we're so glad you
+            walked in.
+          </p>
+        </div>
+
+        {/* 7. Cards */}
+        <div className="wl-cards wl-reveal">
+          <article className="wl-card">
+            <div className="wl-no">NO. 01</div>
+            <h3>Warmth first</h3>
+            <p>
+              Real people, real replies. You'll always know a human is on the
+              other end.
+            </p>
+          </article>
+          <article className="wl-card">
+            <div className="wl-no">NO. 02</div>
+            <h3>Craft, not corners</h3>
+            <p>
+              We sweat the details so the work feels considered — never rushed,
+              never generic.
+            </p>
+          </article>
+          <article className="wl-card">
+            <div className="wl-no">NO. 03</div>
+            <h3>In it together</h3>
+            <p>
+              Your wins are our wins. We're partners in this, not just a vendor
+              on a list.
+            </p>
+          </article>
+        </div>
+
+        {/* 8. Signature */}
+        <div className="wl-sign wl-reveal">
+          <p className="wl-sign-lede">Here's to a great one together,</p>
+          <p className="wl-signature">Sushanth</p>
+          <p className="wl-sign-name">SUSHANTH K</p>
+          <p className="wl-sign-role">Founder · Avlokai</p>
+          <p className="wl-contact">sushanth@avlokai.com · avlokai.com</p>
+        </div>
+
+        {/* 9. Seal */}
+        <div className="wl-seal" aria-hidden="true">
+          <span className="wl-seal-brand">
+            Avlok<em>Ai</em>
+          </span>
+          <span className="wl-seal-year">2026</span>
+          <span className="wl-seal-tag">GLAD YOU'RE HERE</span>
+        </div>
+
+        {/* 10 + 11. Footer + CTA */}
+        <footer className="wl-footer">
+          <hr className="wl-rule" />
+          <div className="wl-footer-row">
+            <p className="wl-ps">
+              <span>
+                P.S. — seriously, <em>welcome aboard.</em>
+              </span>
+              <Sparkle size={18} aria-hidden="true" />
+            </p>
+            <div className="wl-footer-strip">WELCOME · AVLOKAI · 2026</div>
+          </div>
+          <Link to="/login" className="wl-cta">
+            Enter your portal
+            <ArrowRight size={18} aria-hidden="true" />
+          </Link>
+        </footer>
       </div>
     </div>
   );
