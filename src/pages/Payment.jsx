@@ -65,31 +65,56 @@ export default function PaymentPage() {
   useEffect(load, []);
 
   async function handleCreate(form) {
-    const created = await api.post('/payments', { ...form, order_index: schedule.length });
-    setSchedule(prev => [...prev, created]);
-    setCreating(false);
+    try {
+      const created = await api.post('/payments', { ...form, order_index: schedule.length });
+      setSchedule(prev => [...prev, created]);
+      setCreating(false);
+      setError('');
+    } catch (err) {
+      setError(err instanceof ApiError ? err.message : 'Failed to create installment');
+    }
   }
 
   async function handleUpdate(id, form) {
-    const existing = schedule.find(p => p.id === id);
-    const updated = await api.put(`/payments/${id}`, { ...form, order_index: existing.order_index });
-    setSchedule(prev => prev.map(p => p.id === id ? updated : p));
-    setEditingId(null);
+    try {
+      const existing = schedule.find(p => p.id === id);
+      const updated = await api.put(`/payments/${id}`, { ...form, order_index: existing.order_index });
+      setSchedule(prev => prev.map(p => p.id === id ? updated : p));
+      setEditingId(null);
+      setError('');
+    } catch (err) {
+      setError(err instanceof ApiError ? err.message : 'Failed to update installment');
+    }
   }
 
   async function handleDelete(id) {
-    await api.delete(`/payments/${id}`);
-    setSchedule(prev => prev.filter(p => p.id !== id));
+    try {
+      await api.delete(`/payments/${id}`);
+      setSchedule(prev => prev.filter(p => p.id !== id));
+      setError('');
+    } catch (err) {
+      setError(err instanceof ApiError ? err.message : 'Failed to delete installment');
+    }
   }
 
   async function handleSubmitPayment(id) {
-    const updated = await api.patch(`/payments/${id}/submit`);
-    setSchedule(prev => prev.map(p => p.id === id ? updated : p));
+    try {
+      const updated = await api.patch(`/payments/${id}/submit`);
+      setSchedule(prev => prev.map(p => p.id === id ? updated : p));
+      setError('');
+    } catch (err) {
+      setError(err instanceof ApiError ? err.message : 'Failed to submit payment');
+    }
   }
 
   async function handleConfirmPaid(id) {
-    const updated = await api.patch(`/payments/${id}/confirm-paid`);
-    setSchedule(prev => prev.map(p => p.id === id ? updated : p));
+    try {
+      const updated = await api.patch(`/payments/${id}/confirm-paid`);
+      setSchedule(prev => prev.map(p => p.id === id ? updated : p));
+      setError('');
+    } catch (err) {
+      setError(err instanceof ApiError ? err.message : 'Failed to confirm payment');
+    }
   }
 
   const totalPaid = schedule.filter(p => p.status === 'paid').reduce((sum, p) => sum + p.amount, 0);
@@ -149,7 +174,7 @@ export default function PaymentPage() {
                     {next && user?.role === 'client' && next.status !== 'submitted' && (
                       <button className="btn-primary" onClick={() => handleSubmitPayment(next.id)}>
                         <CreditCard size={18} />
-                        Mark as Paid
+                        Submit Payment
                         <ArrowRight size={16} />
                       </button>
                     )}

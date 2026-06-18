@@ -81,21 +81,36 @@ export default function SopPage() {
   useEffect(load, []);
 
   async function handleCreate(form) {
-    const created = await api.post('/sop', { ...form, order_index: steps.length });
-    setSteps(prev => [...prev, created]);
-    setCreating(false);
+    try {
+      const created = await api.post('/sop', { ...form, order_index: steps.length });
+      setSteps(prev => [...prev, created]);
+      setCreating(false);
+      setError('');
+    } catch (err) {
+      setError(err instanceof ApiError ? err.message : 'Failed to create step');
+    }
   }
 
   async function handleUpdate(id, form) {
-    const existing = steps.find(s => s.id === id);
-    const updated = await api.put(`/sop/${id}`, { ...form, order_index: existing.order_index });
-    setSteps(prev => prev.map(s => s.id === id ? updated : s));
-    setEditingId(null);
+    try {
+      const existing = steps.find(s => s.id === id);
+      const updated = await api.put(`/sop/${id}`, { ...form, order_index: existing.order_index });
+      setSteps(prev => prev.map(s => s.id === id ? updated : s));
+      setEditingId(null);
+      setError('');
+    } catch (err) {
+      setError(err instanceof ApiError ? err.message : 'Failed to update step');
+    }
   }
 
   async function handleDelete(id) {
-    await api.delete(`/sop/${id}`);
-    setSteps(prev => prev.filter(s => s.id !== id));
+    try {
+      await api.delete(`/sop/${id}`);
+      setSteps(prev => prev.filter(s => s.id !== id));
+      setError('');
+    } catch (err) {
+      setError(err instanceof ApiError ? err.message : 'Failed to delete step');
+    }
   }
 
   const overallProgress = steps.length

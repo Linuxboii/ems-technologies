@@ -83,26 +83,46 @@ export default function DeliverablesPage() {
   useEffect(load, []);
 
   async function handleCreate(form) {
-    const created = await api.post('/deliverables', { ...form, order_index: items.length });
-    setItems(prev => [...prev, created]);
-    setCreating(false);
+    try {
+      const created = await api.post('/deliverables', { ...form, order_index: items.length });
+      setItems(prev => [...prev, created]);
+      setCreating(false);
+      setError('');
+    } catch (err) {
+      setError(err instanceof ApiError ? err.message : 'Failed to create deliverable');
+    }
   }
 
   async function handleUpdate(id, form) {
-    const existing = items.find(i => i.id === id);
-    const updated = await api.put(`/deliverables/${id}`, { ...existing, ...form, order_index: existing.order_index });
-    setItems(prev => prev.map(i => i.id === id ? updated : i));
-    setEditingId(null);
+    try {
+      const existing = items.find(i => i.id === id);
+      const updated = await api.put(`/deliverables/${id}`, { ...existing, ...form, order_index: existing.order_index });
+      setItems(prev => prev.map(i => i.id === id ? updated : i));
+      setEditingId(null);
+      setError('');
+    } catch (err) {
+      setError(err instanceof ApiError ? err.message : 'Failed to update deliverable');
+    }
   }
 
   async function handleDelete(id) {
-    await api.delete(`/deliverables/${id}`);
-    setItems(prev => prev.filter(i => i.id !== id));
+    try {
+      await api.delete(`/deliverables/${id}`);
+      setItems(prev => prev.filter(i => i.id !== id));
+      setError('');
+    } catch (err) {
+      setError(err instanceof ApiError ? err.message : 'Failed to delete deliverable');
+    }
   }
 
   async function handleAcknowledge(id) {
-    const updated = await api.patch(`/deliverables/${id}/acknowledge`);
-    setItems(prev => prev.map(i => i.id === id ? updated : i));
+    try {
+      const updated = await api.patch(`/deliverables/${id}/acknowledge`);
+      setItems(prev => prev.map(i => i.id === id ? updated : i));
+      setError('');
+    } catch (err) {
+      setError(err instanceof ApiError ? err.message : 'Failed to acknowledge deliverable');
+    }
   }
 
   const counts = {
