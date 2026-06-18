@@ -27,7 +27,7 @@ class User(Base):
     id = Column(Integer, primary_key=True)
     email = Column(String, unique=True, nullable=False, index=True)
     password_hash = Column(String, nullable=False)
-    role = Column(SAEnum(Role), nullable=False)
+    role = Column(SAEnum(Role, values_callable=lambda e: [m.value for m in e]), nullable=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
 
@@ -47,7 +47,7 @@ class SopStep(Base):
     subtitle = Column(String, nullable=False)
     duration = Column(String, nullable=False)
     details = Column(JSON, nullable=False, default=list)
-    status = Column(SAEnum(SopStatus), nullable=False, default=SopStatus.pending)
+    status = Column(SAEnum(SopStatus, values_callable=lambda e: [m.value for m in e]), nullable=False, default=SopStatus.pending)
 
 
 class DeliverableStatus(str, enum.Enum):
@@ -64,7 +64,7 @@ class Deliverable(Base):
     icon_key = Column(String, nullable=False)
     title = Column(String, nullable=False)
     description = Column(String, nullable=False)
-    status = Column(SAEnum(DeliverableStatus), nullable=False, default=DeliverableStatus.upcoming)
+    status = Column(SAEnum(DeliverableStatus, values_callable=lambda e: [m.value for m in e]), nullable=False, default=DeliverableStatus.upcoming)
     date = Column(String, nullable=False)
     files = Column(Integer, nullable=False, default=0)
     progress = Column(Integer, nullable=True)
@@ -85,7 +85,7 @@ class TimelinePhase(Base):
     phase_label = Column(String, nullable=False)
     title = Column(String, nullable=False)
     date_range = Column(String, nullable=False)
-    status = Column(SAEnum(TimelinePhaseStatus), nullable=False, default=TimelinePhaseStatus.upcoming)
+    status = Column(SAEnum(TimelinePhaseStatus, values_callable=lambda e: [m.value for m in e]), nullable=False, default=TimelinePhaseStatus.upcoming)
     progress = Column(Integer, nullable=True)
 
     items = relationship(
@@ -124,4 +124,4 @@ class PaymentInstallment(Base):
     label = Column(String, nullable=False)
     amount = Column(Integer, nullable=False)
     due_date = Column(String, nullable=False)
-    status = Column(SAEnum(PaymentStatus), nullable=False, default=PaymentStatus.upcoming)
+    status = Column(SAEnum(PaymentStatus, values_callable=lambda e: [m.value for m in e]), nullable=False, default=PaymentStatus.upcoming)

@@ -18,7 +18,7 @@ from app.routers import payments
 
 app = FastAPI(title="EMS Technologies Portal API")
 
-origins = os.environ.get("CORS_ORIGINS", "http://localhost:5173").split(",")
+origins = [o.strip() for o in os.environ.get("CORS_ORIGINS", "http://localhost:5173").split(",") if o.strip()]
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
