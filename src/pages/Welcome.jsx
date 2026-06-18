@@ -56,8 +56,8 @@ export default function Welcome() {
           <div className="wl-topbar-left">
             <div className="wl-brand-row">
               <span className="wl-mark" aria-hidden="true">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M12 3.5 4.5 19h3.4l1.3-3h5.6l1.3 3h3.4L12 3.5Zm-1.7 9.4L12 9l1.7 3.9h-3.4Z" fill="#fff" />
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M4 18 12 6l8 12" stroke="#faf7f0" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
               </span>
               <span className="wl-brand">

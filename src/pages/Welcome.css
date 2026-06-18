@@ -23,7 +23,7 @@
   font-family: 'EB Garamond', Georgia, serif;
   position: relative;
   padding: 104px 24px 64px;
-  overflow: hidden;
+  overflow-x: hidden;
 }
 
 /* ----- Corner brackets (decorative frame) ----- */
@@ -80,15 +80,15 @@
   gap: 12px;
 }
 .welcome-letter .wl-mark {
-  width: 40px;
-  height: 40px;
-  border-radius: 9px;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
   flex-shrink: 0;
-  background: linear-gradient(145deg, #2563eb, #1e3a8a);
+  background: var(--w-ink);
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 4px 10px rgba(30, 58, 138, 0.25);
+  box-shadow: 0 3px 8px rgba(26, 23, 20, 0.22);
 }
 .welcome-letter .wl-mark svg { display: block; }
 .welcome-letter .wl-brand {
