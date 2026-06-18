@@ -11,7 +11,7 @@ export default function Footer() {
           Built by AvlokAI
         </p>
         <p style={{ fontSize: 13, color: 'var(--color-text-muted)', fontWeight: 400, maxWidth: 'none' }}>
-          © 2026 Vikram Client Portal. All rights reserved.
+          © 2026 AvlokAI Client Portal. All rights reserved.
         </p>
       </div>
     </footer>

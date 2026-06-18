@@ -8,7 +8,6 @@ import Footer from './components/Footer';
 import Welcome from './pages/Welcome';
 import SopPage from './pages/Sop';
 import DeliverablesPage from './pages/Deliverables';
-import TimelinePage from './pages/Timeline';
 import PaymentPage from './pages/Payment';
 import LoginPage from './pages/Login';
 import AccountPage from './pages/Account';
@@ -35,7 +34,6 @@ export default function App() {
             <Route path="/account" element={<ProtectedRoute><AccountPage /></ProtectedRoute>} />
             <Route path="/sop" element={<ProtectedRoute><SopPage /></ProtectedRoute>} />
             <Route path="/deliverables" element={<ProtectedRoute><DeliverablesPage /></ProtectedRoute>} />
-            <Route path="/timeline" element={<ProtectedRoute><TimelinePage /></ProtectedRoute>} />
             <Route path="/payment" element={<ProtectedRoute><PaymentPage /></ProtectedRoute>} />
           </Routes>
         </main>

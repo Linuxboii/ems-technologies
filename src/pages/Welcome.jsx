@@ -1,10 +1,27 @@
 import { Link } from 'react-router-dom';
 import { useEffect, useRef } from 'react';
 import { ArrowRight, Sparkle } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
 import './Welcome.css';
+
+// Turn an email's local-part into a friendly display name:
+// "vikram@x.com" -> "Vikram", "john.doe@x.com" -> "John Doe"
+function displayNameFromEmail(email) {
+  if (!email) return null;
+  const local = email.split('@')[0];
+  const name = local
+    .split(/[._-]+/)
+    .filter(Boolean)
+    .map((w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
+    .join(' ');
+  return name || null;
+}
 
 export default function Welcome() {
   const rootRef = useRef(null);
+  const { user } = useAuth();
+  const name = displayNameFromEmail(user?.email);
+  const greetingName = name || 'friend';
 
   useEffect(() => {
     const root = rootRef.current;
@@ -69,7 +86,7 @@ export default function Welcome() {
 
           <div className="wl-topbar-right">
             <div className="wl-mono">A LITTLE NOTE</div>
-            <div className="wl-mono wl-accent">FOR MR. VIKRAM</div>
+            <div className="wl-mono wl-accent">{name ? `FOR ${name.toUpperCase()}` : 'FOR YOU'}</div>
           </div>
         </header>
 
@@ -80,7 +97,7 @@ export default function Welcome() {
         <h1 className="wl-headline wl-reveal">
           Welcome aboard,
           <br />
-          <em>Mr. Vikram.</em>
+          <em>{greetingName}.</em>
         </h1>
 
         {/* 4. Lede */}
@@ -105,7 +122,7 @@ export default function Welcome() {
           </p>
           <p>
             From here on, you're not a ticket number or a line on an invoice.
-            You're <strong>Mr. Vikram</strong>, and your work gets our full
+            {name ? <> You're <strong>{name}</strong>, and your work</> : <> Your work</>} gets our full
             attention — the curiosity, the craft, and the occasional 11pm "what
             if we tried…" message.
           </p>

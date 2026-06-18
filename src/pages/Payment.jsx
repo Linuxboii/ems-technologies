@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
-import { CreditCard, Wallet, Calendar, ArrowRight, CheckCircle, AlertCircle } from 'lucide-react';
+import { Wallet, Calendar, CheckCircle, AlertCircle } from 'lucide-react';
 import { api, ApiError } from '../api/client';
 import { useAuth } from '../context/AuthContext';
 
-const STATUS_OPTIONS = ['upcoming', 'pending', 'submitted', 'paid'];
+const STATUS_OPTIONS = ['upcoming', 'pending', 'paid'];
 const emptyForm = { installment_label: '', label: '', amount: '', due_date: '', status: 'upcoming' };
 
 function PaymentForm({ initial, onSave, onCancel }) {
@@ -97,30 +97,11 @@ export default function PaymentPage() {
     }
   }
 
-  async function handleSubmitPayment(id) {
-    try {
-      const updated = await api.patch(`/payments/${id}/submit`);
-      setSchedule(prev => prev.map(p => p.id === id ? updated : p));
-      setError('');
-    } catch (err) {
-      setError(err instanceof ApiError ? err.message : 'Failed to submit payment');
-    }
-  }
-
-  async function handleConfirmPaid(id) {
-    try {
-      const updated = await api.patch(`/payments/${id}/confirm-paid`);
-      setSchedule(prev => prev.map(p => p.id === id ? updated : p));
-      setError('');
-    } catch (err) {
-      setError(err instanceof ApiError ? err.message : 'Failed to confirm payment');
-    }
-  }
-
   const totalPaid = schedule.filter(p => p.status === 'paid').reduce((sum, p) => sum + p.amount, 0);
   const totalDue = schedule.reduce((sum, p) => sum + p.amount, 0);
   const paymentProgress = totalDue ? (totalPaid / totalDue) * 100 : 0;
-  const next = schedule.find(p => p.status === 'pending' || p.status === 'submitted');
+  // Next payment = the first installment in the schedule that isn't paid yet.
+  const next = schedule.find(p => p.status !== 'paid');
 
   function formatInr(amount) {
     return `₹${amount.toLocaleString('en-IN')}`;
@@ -171,24 +152,13 @@ export default function PaymentPage() {
                   </div>
 
                   <div style={{ textAlign: 'right' }}>
-                    {next && user?.role === 'client' && next.status !== 'submitted' && (
-                      <button className="btn-primary" onClick={() => handleSubmitPayment(next.id)}>
-                        <CreditCard size={18} />
-                        Submit Payment
-                        <ArrowRight size={16} />
-                      </button>
+                    {next ? (
+                      <span className={`badge ${next.status === 'pending' ? 'badge-info' : 'badge-muted'}`}>
+                        {next.status === 'pending' ? 'Due now' : 'Upcoming'}
+                      </span>
+                    ) : (
+                      <span className="badge badge-success">All payments cleared</span>
                     )}
-                    {next && next.status === 'submitted' && (
-                      <span className="badge badge-info">Awaiting confirmation</span>
-                    )}
-                    {next && user?.role === 'admin' && next.status === 'submitted' && (
-                      <button className="btn-primary" style={{ marginLeft: 8 }} onClick={() => handleConfirmPaid(next.id)}>
-                        Confirm Paid
-                      </button>
-                    )}
-                    <div style={{ marginTop: 8, fontSize: 12, color: 'var(--color-text-muted)' }}>
-                      Secure via Razorpay / Stripe
-                    </div>
                   </div>
                 </div>
               </div>
@@ -262,10 +232,6 @@ export default function PaymentPage() {
                           <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, color: 'var(--color-success)', fontWeight: 600, fontSize: 13 }}>
                             <CheckCircle size={14} /> Paid
                           </span>
-                        ) : p.status === 'submitted' ? (
-                          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, color: 'var(--color-text)', fontWeight: 600, fontSize: 13 }}>
-                            Submitted
-                          </span>
                         ) : p.status === 'pending' ? (
                           <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, color: 'var(--color-warning)', fontWeight: 600, fontSize: 13 }}>
                             <AlertCircle size={14} /> Due
@@ -275,31 +241,19 @@ export default function PaymentPage() {
                         )}
                       </span>
                       <span style={{ textAlign: 'center', display: 'flex', gap: 6, justifyContent: 'center' }}>
-                        {user?.role === 'client' && (p.status === 'upcoming' || p.status === 'pending') && (
-                          <button className="btn-secondary" style={{ fontSize: 11, padding: '4px 8px' }} onClick={() => handleSubmitPayment(p.id)}>Submit</button>
-                        )}
-                        {user?.role === 'admin' && p.status === 'submitted' && (
-                          <button className="btn-secondary" style={{ fontSize: 11, padding: '4px 8px' }} onClick={() => handleConfirmPaid(p.id)}>Confirm</button>
-                        )}
-                        {user?.role === 'admin' && (
+                        {user?.role === 'admin' ? (
                           <>
                             <button className="btn-secondary" style={{ fontSize: 11, padding: '4px 8px' }} onClick={() => setEditingId(p.id)}>Edit</button>
                             <button className="btn-secondary" style={{ fontSize: 11, padding: '4px 8px' }} onClick={() => handleDelete(p.id)}>Delete</button>
                           </>
+                        ) : (
+                          <span style={{ color: 'var(--color-text-muted)', fontSize: 13 }}>—</span>
                         )}
                       </span>
                     </div>
                   )
                 )}
               </div>
-            </div>
-
-            <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', justifyContent: 'center' }}>
-              {['Visa', 'Mastercard', 'UPI', 'Net Banking', 'Razorpay'].map((method, i) => (
-                <div key={i} className="card" style={{ padding: '10px 18px', fontSize: 13, fontWeight: 500, color: 'var(--color-text-muted)' }}>
-                  {method}
-                </div>
-              ))}
             </div>
           </>
         )}

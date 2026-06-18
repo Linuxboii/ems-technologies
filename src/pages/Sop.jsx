@@ -113,8 +113,15 @@ export default function SopPage() {
     }
   }
 
+  // Completed steps count fully; the in-progress (active) step counts as half,
+  // so a project that's underway doesn't read as 0%.
   const overallProgress = steps.length
-    ? Math.round((steps.filter(s => s.status === 'completed').length / steps.length) * 100)
+    ? Math.round(
+        (steps.reduce(
+          (sum, s) => sum + (s.status === 'completed' ? 1 : s.status === 'active' ? 0.5 : 0),
+          0,
+        ) / steps.length) * 100,
+      )
     : 0;
 
   return (

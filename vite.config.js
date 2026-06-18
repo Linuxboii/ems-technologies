@@ -9,8 +9,9 @@ export default defineConfig({
     allowedHosts: ['vm806993434.tailfacbb3.ts.net'],
     proxy: {
       '/api': {
-        target: 'http://localhost:8000',
+        target: 'https://client-portal-api.avlokai.com',
         changeOrigin: true,
+        secure: true,
       },
     },
   },
