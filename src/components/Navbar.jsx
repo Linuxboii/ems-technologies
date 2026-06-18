@@ -1,6 +1,7 @@
 import { Menu, X } from 'lucide-react';
 import { useState, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 
 const links = [
   { label: 'Welcome', path: '/' },
@@ -14,6 +15,8 @@ export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const { pathname } = useLocation();
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 40);
@@ -22,6 +25,12 @@ export default function Navbar() {
   }, []);
 
   useEffect(() => { setIsOpen(false); }, [pathname]);
+
+  async function handleLogout() {
+    await logout();
+    setIsOpen(false);
+    navigate('/');
+  }
 
   return (
     <nav style={{
@@ -76,6 +85,23 @@ export default function Navbar() {
               </Link>
             );
           })}
+
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginLeft: 12, paddingLeft: 12, borderLeft: '1px solid var(--color-border)' }}>
+            {user ? (
+              <>
+                <Link to="/account" style={{ fontSize: 13, color: 'var(--color-text-muted)', textDecoration: 'none', fontWeight: 500 }}>
+                  {user.email}
+                </Link>
+                <button onClick={handleLogout} className="btn-secondary" style={{ padding: '6px 14px', fontSize: 13 }}>
+                  Log out
+                </button>
+              </>
+            ) : (
+              <Link to="/login" className="btn-secondary" style={{ padding: '6px 14px', fontSize: 13, textDecoration: 'none' }}>
+                Log in
+              </Link>
+            )}
+          </div>
         </div>
 
         {/* Mobile toggle */}
@@ -113,6 +139,42 @@ export default function Navbar() {
               {l.label}
             </Link>
           ))}
+          {user ? (
+            <>
+              <Link
+                to="/account"
+                onClick={() => setIsOpen(false)}
+                style={{
+                  display: 'block', padding: '14px 0', color: 'var(--color-text-secondary)',
+                  fontWeight: 500, fontSize: 16, textDecoration: 'none',
+                  borderBottom: '1px solid var(--color-border)',
+                }}
+              >
+                {user.email}
+              </Link>
+              <button
+                onClick={handleLogout}
+                style={{
+                  display: 'block', width: '100%', textAlign: 'left', padding: '14px 0',
+                  color: 'var(--color-text-secondary)', fontWeight: 500, fontSize: 16,
+                  background: 'none', border: 'none', cursor: 'pointer',
+                }}
+              >
+                Log out
+              </button>
+            </>
+          ) : (
+            <Link
+              to="/login"
+              onClick={() => setIsOpen(false)}
+              style={{
+                display: 'block', padding: '14px 0', color: 'var(--color-text-secondary)',
+                fontWeight: 500, fontSize: 16, textDecoration: 'none',
+              }}
+            >
+              Log in
+            </Link>
+          )}
         </div>
       )}
 

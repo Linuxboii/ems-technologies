@@ -1,6 +1,8 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
+import { AuthProvider } from './context/AuthContext';
+import ProtectedRoute from './components/ProtectedRoute';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import Welcome from './pages/Welcome';
@@ -8,6 +10,8 @@ import SopPage from './pages/Sop';
 import DeliverablesPage from './pages/Deliverables';
 import TimelinePage from './pages/Timeline';
 import PaymentPage from './pages/Payment';
+import LoginPage from './pages/Login';
+import AccountPage from './pages/Account';
 
 // Scroll to top on route change
 function ScrollToTop() {
@@ -21,18 +25,22 @@ function ScrollToTop() {
 export default function App() {
   return (
     <BrowserRouter>
-      <ScrollToTop />
-      <Navbar />
-      <main>
-        <Routes>
-          <Route path="/" element={<Welcome />} />
-          <Route path="/sop" element={<SopPage />} />
-          <Route path="/deliverables" element={<DeliverablesPage />} />
-          <Route path="/timeline" element={<TimelinePage />} />
-          <Route path="/payment" element={<PaymentPage />} />
-        </Routes>
-      </main>
-      <Footer />
+      <AuthProvider>
+        <ScrollToTop />
+        <Navbar />
+        <main>
+          <Routes>
+            <Route path="/" element={<Welcome />} />
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/account" element={<ProtectedRoute><AccountPage /></ProtectedRoute>} />
+            <Route path="/sop" element={<ProtectedRoute><SopPage /></ProtectedRoute>} />
+            <Route path="/deliverables" element={<ProtectedRoute><DeliverablesPage /></ProtectedRoute>} />
+            <Route path="/timeline" element={<ProtectedRoute><TimelinePage /></ProtectedRoute>} />
+            <Route path="/payment" element={<ProtectedRoute><PaymentPage /></ProtectedRoute>} />
+          </Routes>
+        </main>
+        <Footer />
+      </AuthProvider>
     </BrowserRouter>
   );
 }
