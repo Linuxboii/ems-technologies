@@ -67,23 +67,33 @@ export default function SopPage() {
   const [steps, setSteps] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const [openIndex, setOpenIndex] = useState(null);
+  const [openIds, setOpenIds] = useState(() => new Set());
   const [creating, setCreating] = useState(false);
   const [editingId, setEditingId] = useState(null);
 
   function load() {
     api.get('/sop')
-      .then(data => { setSteps(data); setOpenIndex(data.findIndex(s => s.status === 'active')); })
+      .then(data => { setSteps(data); setOpenIds(new Set(data.map(s => s.id))); }) // expand all by default
       .catch(err => setError(err instanceof ApiError ? err.message : 'Failed to load SoP'))
       .finally(() => setLoading(false));
   }
 
   useEffect(load, []);
 
+  function toggleOpen(id) {
+    setOpenIds(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  }
+
   async function handleCreate(form) {
     try {
       const created = await api.post('/sop', { ...form, order_index: steps.length });
       setSteps(prev => [...prev, created]);
+      setOpenIds(prev => new Set(prev).add(created.id)); // expand the newly added step
       setCreating(false);
       setError('');
     } catch (err) {
@@ -184,7 +194,7 @@ export default function SopPage() {
                 return (
                   <div key={step.id} style={{ marginBottom: 10 }}>
                     <div
-                      onClick={() => setOpenIndex(openIndex === idx ? null : idx)}
+                      onClick={() => toggleOpen(step.id)}
                       className="card"
                       style={{
                         cursor: 'pointer', background: statusCfg[step.status].bg,
@@ -225,14 +235,14 @@ export default function SopPage() {
                         <ChevronDown size={18} style={{
                           color: 'var(--color-text-muted)', flexShrink: 0,
                           transition: 'transform 0.25s ease',
-                          transform: openIndex === idx ? 'rotate(180deg)' : 'rotate(0deg)',
+                          transform: openIds.has(step.id) ? 'rotate(180deg)' : 'rotate(0deg)',
                         }} />
                       </div>
 
                       <div style={{
-                        maxHeight: openIndex === idx ? 300 : 0, overflow: 'hidden',
+                        maxHeight: openIds.has(step.id) ? 400 : 0, overflow: 'hidden',
                         transition: 'max-height 0.35s ease, opacity 0.25s ease, margin 0.25s ease',
-                        opacity: openIndex === idx ? 1 : 0, marginTop: openIndex === idx ? 16 : 0,
+                        opacity: openIds.has(step.id) ? 1 : 0, marginTop: openIds.has(step.id) ? 16 : 0,
                       }}>
                         <div style={{ paddingTop: 14, borderTop: '1px solid var(--color-border)' }}>
                           {step.details.map((detail, i) => (
