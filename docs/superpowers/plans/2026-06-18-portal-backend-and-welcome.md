@@ -12,7 +12,9 @@
 
 - Specs of record: `docs/superpowers/specs/2026-06-17-backend-auth-design.md` and `docs/superpowers/specs/2026-06-18-welcome-page-design.md`. Where this plan and a spec disagree, the spec wins.
 - **No automated test suite** (pytest/vitest) — repo convention. Verification is manual: curl smoke tests + browser click-through. Each task ends with explicit verification commands/steps.
-- DB: Postgres `ems_portal` on `localhost:5432`, creds from `backend/.env` `DATABASE_URL`. Never commit `.env`; ship `.env.example`.
+- **Deployment target is a VPS.** The Postgres DB is provisioned ON THE VPS, not locally. Do NOT create databases on the dev machine. Backend code is written and import-verified locally; **live runtime verification (seed/login curl) is deferred to the VPS.** Where a backend task's verification step requires a running DB, locally substitute: `python -c "import ..."` import checks + OpenAPI route presence (`/openapi.json`); run the curl steps on the VPS after `setup_db.sh`.
+- **Execution order (per user):** frontend first (Part C Welcome, then Part B integration), then backend (Part A), then the VPS DB-provisioning script (Part D).
+- DB: Postgres `ems_portal`, creds from `backend/.env` `DATABASE_URL`. Never commit `.env`; ship `.env.example`. DB role/db created on the VPS via `backend/scripts/setup_db.sh` (Part D).
 - Schema via `Base.metadata.create_all()` at startup. No Alembic.
 - Auth: JWT (HS256), 7-day expiry, in an httpOnly `SameSite=Lax` cookie named `session`; `secure` flag from `COOKIE_SECURE` env. Frontend never reads the token; all fetches use `credentials: 'include'`.
 - Roles: `admin` (full CRUD on all content) and `client` (additive status toggles only — never overwrites admin status fields).
@@ -1645,7 +1647,78 @@ export default function App() {
 
 ---
 
-## Final integration verification (manual)
+## PART D — VPS deployment provisioning
+
+### Task D1: Postgres provisioning script (psql) + deploy notes
+
+**Files:**
+- Create: `backend/scripts/setup_db.sh`
+- Create: `backend/DEPLOY.md`
+
+**Interfaces:**
+- Produces: an idempotent shell script that, run on the VPS as the postgres
+  superuser, creates role `admin` and database `ems_portal` to match
+  `backend/.env`'s `DATABASE_URL`. It does NOT run app code or seed.
+
+- [ ] **Step 1:** Write `backend/scripts/setup_db.sh` (idempotent; values overridable via env, defaults match `.env`):
+
+```bash
+#!/usr/bin/env bash
+# Provision Postgres role + database for the EMS portal. Run ON THE VPS as a
+# user that can reach the postgres superuser, e.g.:
+#   sudo -u postgres bash backend/scripts/setup_db.sh
+# Override defaults with env vars: DB_NAME, DB_USER, DB_PASSWORD.
+set -euo pipefail
+
+DB_NAME="${DB_NAME:-ems_portal}"
+DB_USER="${DB_USER:-admin}"
+DB_PASSWORD="${DB_PASSWORD:-Parzival@1477}"
+
+# psql runs as the superuser invoking this script (e.g. via sudo -u postgres).
+# Escape single quotes in the password for the SQL string literal.
+ESC_PW="${DB_PASSWORD//\'/\'\'}"
+
+psql -v ON_ERROR_STOP=1 <<SQL
+DO \$\$
+BEGIN
+  IF NOT EXISTS (SELECT FROM pg_roles WHERE rolname = '${DB_USER}') THEN
+    CREATE ROLE ${DB_USER} LOGIN PASSWORD '${ESC_PW}';
+  ELSE
+    ALTER ROLE ${DB_USER} WITH LOGIN PASSWORD '${ESC_PW}';
+  END IF;
+END
+\$\$;
+SQL
+
+# CREATE DATABASE cannot run inside a DO block / transaction; guard with a check.
+if ! psql -tAc "SELECT 1 FROM pg_database WHERE datname = '${DB_NAME}'" | grep -q 1; then
+  psql -v ON_ERROR_STOP=1 -c "CREATE DATABASE ${DB_NAME} OWNER ${DB_USER};"
+  echo "Created database ${DB_NAME} owned by ${DB_USER}."
+else
+  echo "Database ${DB_NAME} already exists; left as-is."
+fi
+
+echo "Done. App startup will create tables; POST /api/seed loads initial content."
+```
+
+- [ ] **Step 2:** Write `backend/DEPLOY.md` documenting the VPS bring-up order:
+  1. `cp backend/.env.example backend/.env` and fill real `DATABASE_URL`, `JWT_SECRET` (long random), `COOKIE_SECURE=true` (behind https), `CORS_ORIGINS` (the deployed frontend origin).
+  2. `sudo -u postgres bash backend/scripts/setup_db.sh` (idempotent; reads same creds).
+  3. `python -m venv venv && source venv/bin/activate && pip install -r backend/requirements.txt`.
+  4. `uvicorn app.main:app --host 127.0.0.1 --port 8000` (behind nginx reverse-proxying `/api` → 8000).
+  5. `curl -s -X POST https://<host>/api/seed` once → creates `admin@avlokai.com / admin123`.
+  6. Create the client account: `POST /api/admin/users` as admin.
+  7. Build frontend `npm run build`; serve `dist/`; nginx routes `/api` to uvicorn (replaces the Vite dev proxy).
+
+- [ ] **Step 3:** `chmod +x backend/scripts/setup_db.sh`.
+
+- [ ] **Step 4: Verify (local, no DB):** `bash -n backend/scripts/setup_db.sh` (syntax check passes). Do NOT execute it locally — it runs on the VPS only.
+
+- [ ] **Step 5: Commit** `git add backend/scripts/setup_db.sh backend/DEPLOY.md && git commit -m "feat(deploy): VPS Postgres provisioning script + deploy notes"`
+
+---
+
+## Final integration verification (manual — on VPS)
 
 - [ ] Fresh boot: backend up, `npm run dev` up, DB has data (seeded once).
 - [ ] Public `/` renders the letter without login; `Enter your portal →` → `/login`.
