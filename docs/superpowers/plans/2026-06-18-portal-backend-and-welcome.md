@@ -16,7 +16,7 @@
 - **Execution order (per user):** frontend first (Part C Welcome, then Part B integration), then backend (Part A), then the VPS DB-provisioning script (Part D).
 - DB: Postgres `ems_portal`, creds from `backend/.env` `DATABASE_URL`. Never commit `.env`; ship `.env.example`. DB role/db created on the VPS via `backend/scripts/setup_db.sh` (Part D).
 - Schema via `Base.metadata.create_all()` at startup. No Alembic.
-- Auth: JWT (HS256), 7-day expiry, in an httpOnly `SameSite=Lax` cookie named `session`; `secure` flag from `COOKIE_SECURE` env. Frontend never reads the token; all fetches use `credentials: 'include'`.
+- Auth: JWT (HS256), 7-day expiry, in an httpOnly `SameSite=Lax` cookie named `access_token`; `secure` flag from `COOKIE_SECURE` env. Frontend never reads the token; all fetches use `credentials: 'include'`.
 - Roles: `admin` (full CRUD on all content) and `client` (additive status toggles only — never overwrites admin status fields).
 - Status enum string values MUST match the frontend verbatim: SOP `pending|active|completed`; deliverables `upcoming|in-progress|completed`; timeline phases `upcoming|active|completed`; payments `upcoming|pending|submitted|paid`.
 - Money stored as integer INR (paise not used): `150000`, `100000`, `100000`, `50000`.
@@ -255,7 +255,7 @@ Expected: 6 tables listed (`users`, `sop_steps`, `deliverables`, `timeline_phase
 **Interfaces:**
 - Produces:
   - `hash_password(pw: str) -> str`, `verify_password(pw: str, hashed: str) -> bool`
-  - `create_token(user_id: int) -> str`, `COOKIE_NAME = "session"`, `set_auth_cookie(resp, token)`, `clear_auth_cookie(resp)`
+  - `create_token(user_id: int) -> str`, `COOKIE_NAME = "access_token"`, `set_auth_cookie(resp, token)`, `clear_auth_cookie(resp)`
   - `get_current_user(request, db) -> User` (raises 401), `require_role(role: str)` → dependency (raises 403)
 
 - [ ] **Step 1:** Write `backend/app/auth.py`:
@@ -274,7 +274,7 @@ _pwd = CryptContext(schemes=["bcrypt"], deprecated="auto")
 JWT_SECRET = os.environ["JWT_SECRET"]
 JWT_ALG = "HS256"
 EXPIRE_DAYS = int(os.environ.get("ACCESS_TOKEN_EXPIRE_DAYS", "7"))
-COOKIE_NAME = "session"
+COOKIE_NAME = "access_token"
 COOKIE_SECURE = os.environ.get("COOKIE_SECURE", "false").lower() == "true"
 
 

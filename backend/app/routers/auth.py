@@ -35,7 +35,13 @@ def login(body: LoginRequest, response: Response, db: Session = Depends(get_db))
 
 @router.post("/logout")
 def logout(response: Response):
-    response.delete_cookie("access_token", path="/")
+    response.delete_cookie(
+        "access_token",
+        path="/",
+        httponly=True,
+        samesite="lax",
+        secure=COOKIE_SECURE,
+    )
     return {"detail": "Logged out"}
 
 
