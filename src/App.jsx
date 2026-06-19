@@ -29,7 +29,7 @@ export default function App() {
         <Navbar />
         <main>
           <Routes>
-            <Route path="/" element={<Welcome />} />
+            <Route path="/" element={<ProtectedRoute><Welcome /></ProtectedRoute>} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/account" element={<ProtectedRoute><AccountPage /></ProtectedRoute>} />
             <Route path="/sop" element={<ProtectedRoute><SopPage /></ProtectedRoute>} />

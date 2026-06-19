@@ -18,7 +18,7 @@ export default function LoginPage() {
     setSubmitting(true);
     try {
       await login(email, password);
-      const redirectTo = location.state?.from || '/sop';
+      const redirectTo = location.state?.from || '/';
       navigate(redirectTo, { replace: true });
     } catch (err) {
       setError(err instanceof ApiError ? err.message : 'Login failed');
