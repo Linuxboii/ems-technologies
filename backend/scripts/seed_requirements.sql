@@ -1,19 +1,37 @@
 -- Seed the Project Requirements content into the portal database.
 --
--- The `requirement_sections` table is created automatically by the app on
--- startup (Base.metadata.create_all). Run this AFTER the app has started once,
--- as the DB owner, e.g. on the VPS:
+-- IMPORTANT: connect to the APP database (ems_portal), not the default
+-- "postgres" database. Run as the DB owner, e.g. on the VPS:
 --
 --   psql -U admin -d ems_portal -f backend/scripts/seed_requirements.sql
 --
 -- (Match -U / -d to backend/.env DATABASE_URL; defaults are user "admin",
 --  database "ems_portal".)
 --
--- Idempotent: clears existing requirement sections and re-inserts, so it is
--- safe to re-run whenever the content changes. The frontend /requirements page
--- always reads this data from the backend — no demo data lives in the client.
+-- Self-contained: creates the table if it doesn't exist yet (so you don't have
+-- to start the app first), then clears and re-inserts the content. Idempotent —
+-- safe to re-run whenever the content changes. The CREATE TABLE matches the
+-- SQLAlchemy model in backend/app/models.py, so the app's create_all on startup
+-- sees it already exists and leaves it untouched. The frontend /requirements
+-- page always reads this data from the backend — no demo data lives in the client.
 
 BEGIN;
+
+CREATE TABLE IF NOT EXISTS requirement_sections (
+  id          SERIAL PRIMARY KEY,
+  order_index INTEGER NOT NULL,
+  icon_key    VARCHAR NOT NULL,
+  title       VARCHAR NOT NULL,
+  intro       VARCHAR,
+  groups      JSON NOT NULL
+);
+
+-- Make sure the app's login role owns / can use the table and its sequence.
+-- Matters when this script is run as the postgres superuser: the table would
+-- otherwise be owned by postgres and the app user "admin" could not read it.
+ALTER TABLE requirement_sections OWNER TO admin;
+GRANT ALL PRIVILEGES ON TABLE requirement_sections TO admin;
+GRANT ALL PRIVILEGES ON SEQUENCE requirement_sections_id_seq TO admin;
 
 DELETE FROM requirement_sections;
 
