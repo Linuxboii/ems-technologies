@@ -38,7 +38,22 @@ export default function RequirementsPage() {
         {loading ? (
           <div style={{ textAlign: 'center', color: 'var(--color-text-muted)' }}>Loading…</div>
         ) : sections.length === 0 ? (
-          <div style={{ textAlign: 'center', color: 'var(--color-text-muted)' }}>No requirements have been added yet.</div>
+          <div style={{
+            textAlign: 'center',
+            padding: '48px 24px',
+            border: '2px dashed var(--color-border)',
+            borderRadius: 12,
+            background: 'var(--color-surface)',
+            color: 'var(--color-text-secondary)',
+          }}>
+            <FileText size={40} style={{ color: 'var(--color-text-muted)', marginBottom: 16 }} />
+            <h3 style={{ fontSize: 18, fontWeight: 700, color: 'var(--color-text)', margin: '0 0 8px' }}>
+              No requirements to show yet
+            </h3>
+            <p style={{ fontSize: 14, margin: 0 }}>
+              The server returned no requirement sections. Once they're added, they'll appear here.
+            </p>
+          </div>
         ) : (
           <div className="stagger" style={{ display: 'grid', gap: 20 }}>
             {sections.map((section) => {
