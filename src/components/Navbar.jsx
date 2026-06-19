@@ -6,6 +6,7 @@ import { useAuth } from '../context/AuthContext';
 const links = [
   { label: 'Welcome', path: '/' },
   { label: 'SoP', path: '/sop' },
+  { label: 'Requirements', path: '/requirements' },
   { label: 'Deliverables', path: '/deliverables' },
   { label: 'Payment', path: '/payment' },
 ];

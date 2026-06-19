@@ -95,6 +95,37 @@ class DeliverableUpdate(DeliverableCreate):
     pass
 
 
+class RequirementGroup(BaseModel):
+    heading: Optional[str] = None
+    note: Optional[str] = None
+    ordered: bool = False
+    items: List[str] = []
+
+
+class RequirementSectionOut(BaseModel):
+    id: int
+    order_index: int
+    icon_key: str
+    title: str
+    intro: Optional[str] = None
+    groups: List[RequirementGroup] = []
+
+    class Config:
+        from_attributes = True
+
+
+class RequirementSectionCreate(BaseModel):
+    order_index: int
+    icon_key: str
+    title: str
+    intro: Optional[str] = None
+    groups: List[RequirementGroup] = []
+
+
+class RequirementSectionUpdate(RequirementSectionCreate):
+    pass
+
+
 class TimelineItemOut(BaseModel):
     id: int
     order_index: int

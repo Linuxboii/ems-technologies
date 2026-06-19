@@ -12,6 +12,7 @@ from app.routers import seed
 from app.routers import auth
 from app.routers import admin_users
 from app.routers import sop
+from app.routers import requirements
 from app.routers import deliverables
 from app.routers import timeline
 from app.routers import payments
@@ -37,6 +38,7 @@ app.include_router(seed.router)
 app.include_router(auth.router)
 app.include_router(admin_users.router)
 app.include_router(sop.router)
+app.include_router(requirements.router)
 app.include_router(deliverables.router)
 app.include_router(timeline.router)
 app.include_router(payments.router)

@@ -7,6 +7,7 @@ import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import Welcome from './pages/Welcome';
 import SopPage from './pages/Sop';
+import RequirementsPage from './pages/Requirements';
 import DeliverablesPage from './pages/Deliverables';
 import PaymentPage from './pages/Payment';
 import LoginPage from './pages/Login';
@@ -33,6 +34,7 @@ export default function App() {
             <Route path="/login" element={<LoginPage />} />
             <Route path="/account" element={<ProtectedRoute><AccountPage /></ProtectedRoute>} />
             <Route path="/sop" element={<ProtectedRoute><SopPage /></ProtectedRoute>} />
+            <Route path="/requirements" element={<ProtectedRoute><RequirementsPage /></ProtectedRoute>} />
             <Route path="/deliverables" element={<ProtectedRoute><DeliverablesPage /></ProtectedRoute>} />
             <Route path="/payment" element={<ProtectedRoute><PaymentPage /></ProtectedRoute>} />
           </Routes>

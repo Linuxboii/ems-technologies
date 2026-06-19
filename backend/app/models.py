@@ -108,6 +108,19 @@ class TimelineItem(Base):
     phase = relationship("TimelinePhase", back_populates="items")
 
 
+class RequirementSection(Base):
+    __tablename__ = "requirement_sections"
+
+    id = Column(Integer, primary_key=True)
+    order_index = Column(Integer, nullable=False)
+    icon_key = Column(String, nullable=False)
+    title = Column(String, nullable=False)
+    intro = Column(String, nullable=True)
+    # List of groups: [{ "heading": str|null, "note": str|null,
+    #                    "ordered": bool, "items": [str] }]
+    groups = Column(JSON, nullable=False, default=list)
+
+
 class PaymentStatus(str, enum.Enum):
     upcoming = "upcoming"
     pending = "pending"
