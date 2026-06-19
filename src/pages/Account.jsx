@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { ApiError } from '../api/client';
 import { useAuth } from '../context/AuthContext';
+import PasswordInput from '../components/PasswordInput';
 
 export default function AccountPage() {
   const { user, changePassword } = useAuth();
@@ -41,25 +42,23 @@ export default function AccountPage() {
               <label style={{ display: 'block', fontSize: 13, fontWeight: 600, marginBottom: 6 }}>
                 Current password
               </label>
-              <input
-                type="password"
+              <PasswordInput
                 value={oldPassword}
                 onChange={(e) => setOldPassword(e.target.value)}
                 required
-                style={{ width: '100%', padding: '10px 12px', borderRadius: 8, border: '1px solid var(--color-border)', fontSize: 14 }}
+                autoComplete="current-password"
               />
             </div>
             <div style={{ marginBottom: 20 }}>
               <label style={{ display: 'block', fontSize: 13, fontWeight: 600, marginBottom: 6 }}>
                 New password
               </label>
-              <input
-                type="password"
+              <PasswordInput
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
                 required
                 minLength={6}
-                style={{ width: '100%', padding: '10px 12px', borderRadius: 8, border: '1px solid var(--color-border)', fontSize: 14 }}
+                autoComplete="new-password"
               />
             </div>
             {error && (

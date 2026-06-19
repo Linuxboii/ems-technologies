@@ -7,12 +7,22 @@ export class ApiError extends Error {
   }
 }
 
+let unauthorizedHandler = null;
+
+export function setUnauthorizedHandler(fn) {
+  unauthorizedHandler = fn;
+}
+
 async function request(path, options = {}) {
   const res = await fetch(`${BASE_URL}${path}`, {
     credentials: 'include',
     headers: options.body ? { 'Content-Type': 'application/json' } : undefined,
     ...options,
   });
+
+  if (res.status === 401 && unauthorizedHandler) {
+    unauthorizedHandler();
+  }
 
   if (!res.ok) {
     let detail = res.statusText;

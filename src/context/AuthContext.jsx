@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useState } from 'react';
-import { api } from '../api/client';
+import { api, setUnauthorizedHandler } from '../api/client';
 
 const AuthContext = createContext(null);
 
@@ -8,10 +8,16 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    // When any request is rejected with 401 (e.g. the session token expired),
+    // drop the user so ProtectedRoute redirects to the login page.
+    setUnauthorizedHandler(() => setUser(null));
+
     api.get('/auth/me')
       .then(setUser)
       .catch(() => setUser(null))
       .finally(() => setLoading(false));
+
+    return () => setUnauthorizedHandler(null);
   }, []);
 
   async function login(email, password) {

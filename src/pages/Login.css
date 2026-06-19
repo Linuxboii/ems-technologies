@@ -1,0 +1,78 @@
+/* ===========================================================================
+   Login transition motion — button morph (idle → spinner → check) and the
+   card fade/lift hand-off into the Welcome page. Monochrome, matches the
+   portal's --color-accent aesthetic. All motion is disabled under
+   prefers-reduced-motion (the component also skips the timing in JS).
+   =========================================================================== */
+
+.login-card {
+  transition: opacity 400ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 400ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.login-card.is-leaving {
+  opacity: 0;
+  transform: translateY(-8px) scale(0.97);
+}
+
+/* ----- Button morph contents ----- */
+.login-btn-content {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+/* Spinning ring shown while submitting */
+.login-spinner {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.35);
+  border-top-color: #fff;
+  animation: login-spin 0.6s linear infinite;
+}
+
+@keyframes login-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Checkmark that draws itself in on success */
+.login-check {
+  width: 16px;
+  height: 16px;
+  flex: none;
+}
+
+.login-check path {
+  stroke: #fff;
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  fill: none;
+  stroke-dasharray: 24;
+  stroke-dashoffset: 24;
+  animation: login-check-draw 360ms cubic-bezier(0.65, 0, 0.45, 1) forwards;
+}
+
+@keyframes login-check-draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .login-card,
+  .login-card.is-leaving {
+    transition: none;
+  }
+  .login-spinner {
+    animation: none;
+  }
+  .login-check path {
+    animation: none;
+    stroke-dashoffset: 0;
+  }
+}
